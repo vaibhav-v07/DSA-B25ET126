@@ -1,0 +1,149 @@
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define UART_BUFFER_SIZE 128
+
+typedef struct {
+    uint8_t data[UART_BUFFER_SIZE];
+    volatile uint16_t head;
+    volatile uint16_t tail;
+} UART_Buffer;
+
+/* Initialize circular buffer */
+void UART_BufferInit(UART_Buffer *buffer)
+{
+    buffer->head = 0;
+    buffer->tail = 0;
+}
+
+/* Insert one byte into the buffer */
+bool UART_Push(UART_Buffer *buffer, uint8_t byte)
+{
+    uint16_t next =
+        (buffer->head + 1U) % UART_BUFFER_SIZE;
+
+    if (next == buffer->tail) {
+        return false;  /* Buffer full */
+    }
+
+    buffer->data[buffer->head] = byte;
+    buffer->head = next;
+
+    return true;
+}
+
+/* Remove one byte from the buffer */
+bool UART_Pop(UART_Buffer *buffer, uint8_t *byte)
+{
+    if (buffer->head == buffer->tail) {
+        return false;  /* Buffer empty */
+    }
+
+    *byte = buffer->data[buffer->tail];
+
+    buffer->tail =
+        (buffer->tail + 1U) % UART_BUFFER_SIZE;
+
+    return true;
+}
+
+/* Number of bytes currently available */
+uint16_t UART_Available(const UART_Buffer *buffer)
+{
+    return (buffer->head + UART_BUFFER_SIZE
+            - buffer->tail) % UART_BUFFER_SIZE;
+}
+
+/* UART communication context */
+typedef struct {
+    UART_Buffer rx;
+    UART_Buffer tx;
+} UART_Handle;
+
+void UART_Init(UART_Handle *uart)
+{
+    UART_BufferInit(&uart->rx);
+    UART_BufferInit(&uart->tx);
+}
+
+/* Called when hardware receives a byte */
+void UART_RxInterrupt(UART_Handle *uart, uint8_t byte)
+{
+    if (!UART_Push(&uart->rx, byte)) {
+        /* RX overflow: handle or count the error */
+    }
+}
+
+/* Queue a byte for transmission */
+bool UART_WriteByte(UART_Handle *uart, uint8_t byte)
+{
+    return UART_Push(&uart->tx, byte);
+}
+
+/* Queue a string for transmission */
+bool UART_WriteString(UART_Handle *uart,
+                      const char *str)
+{
+    while (*str != '\0') {
+        if (!UART_WriteByte(uart, (uint8_t)*str)) {
+            return false;
+        }
+        str++;
+    }
+
+    return true;
+}
+
+/* Called when TX hardware can accept another byte */
+bool UART_TxNextByte(UART_Handle *uart, uint8_t *byte)
+{
+    return UART_Pop(&uart->tx, byte);
+}
+
+/* Read one received byte from the application */
+bool UART_ReadByte(UART_Handle *uart, uint8_t *byte)
+{
+    return UART_Pop(&uart->rx, byte);
+}
+
+/* Demonstration on a normal computer */
+int main(void)
+{
+    UART_Handle uart;
+    uint8_t byte;
+
+    UART_Init(&uart);
+
+    /* Simulate receiving "HELLO" */
+    const char *message = "HELLO";
+
+    while (*message != '\0') {
+        UART_RxInterrupt(&uart, (uint8_t)*message);
+        message++;
+    }
+
+    printf("Received data: ");
+
+    while (UART_ReadByte(&uart, &byte)) {
+        putchar(byte);
+    }
+
+    printf("\n");
+
+    /* Queue a response for transmission */
+    UART_WriteString(&uart, "ACK\r\n");
+
+    printf("Transmitted data: ");
+
+    /* Simulate hardware transmitting queued bytes */
+    while (UART_TxNextByte(&uart, &byte)) {
+        putchar(byte);
+    }
+
+    printf("\n");
+
+    return 0;
+}
