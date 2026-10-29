@@ -1,0 +1,83 @@
+#include <stdio.h> 
+#include <string.h> 
+int main() {  
+ char str1[100], str2[100]; 
+ int choice, n, i, j, position, length, r=6; 
+  
+ printf("Enter first string: "); 
+ scanf("%s", str1); 
+ while(r==6) { 
+  
+  
+ printf("\n1) Substring"); 
+ printf("\n2) Palindrome"); 
+ printf("\n3) Compare"); 
+ printf("\n4) Copy"); 
+ printf("\n5) Reverse"); 
+ printf("\n6) Do you want to exit?"); 
+ printf("\nEnter your choice: "); 
+ scanf("%d", &choice); 
+  
+  
+ switch(choice){ 
+ case 1:  
+ printf("Enter starting position: "); 
+ scanf("%d", &position); 
+ n = strlen(str1); 
+ for(i = 0; i < n - position; i++) 
+ { 
+ str2[i] = str1[position + i]; 
+ } 
+ str2[i] = '\0'; 
+ printf("Substring = %s", str2);  break; 
+  
+ case 2:  
+ n = strlen(str1); 
+ for(i = 0; i < n; i++) 
+ { 
+ if(str1[i] != str1[n-i-1])  { 
+ printf("Not a Palindrome\n");   
+ } 
+ } 
+ if(i==n/2) 
+ { 
+ printf("Palindrome"); 
+ } 
+ break; 
+ case 3: 
+  
+ printf("Enter second string:");  scanf("%s", str2); 
+  
+ if(strcmp(str1,str2)==0){ 
+ printf("Strings are equal\n");  }else{ 
+ printf("Strings are not equal\n");  } 
+ break; 
+  
+  
+ case 4: 
+ strcpy(str2, str1);
+ printf("\nCopied String = %s", str2); 
+ break; 
+  
+ case 5:  
+ n = strlen(str1); 
+ j = 0; 
+ for(i = n-1; i >= 0; i--) 
+ { 
+ str2[j] = str1[i]; 
+ j++; 
+ } 
+ str2[j] = '\0'; 
+ printf("\nReversed String = %s", str2);  break; 
+ case 6: 
+ r=5; 
+ break; 
+  
+  
+ default: 
+ printf("\nInvalid Choice"); 
+ } 
+} 
+  
+ return 0; 
+} 
