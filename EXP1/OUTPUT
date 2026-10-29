@@ -1,0 +1,45 @@
+OUTPUT: 
+Enter first string: MMCOE 
+1) Substring 
+2) Palindrome 
+3) Compare
+4) Copy 
+5) Reverse 
+6) Do you want to exit? Enter your choice: 1 
+Enter starting position: 1 Substring = MCOE 
+1) Substring 
+2) Palindrome 
+3) Compare 
+4) Copy 
+5) Reverse 
+6) Do you want to exit? Enter your choice: 2 
+Not a Palindrome 
+1) Substring 
+2) Palindrome 
+3) Compare 
+4) Copy 
+5) Reverse 
+6) Do you want to exit? Enter your choice: 3 
+Enter second string:HELLO Strings are not equal 
+1) Substring 
+2) Palindrome 
+3) Compare 
+4) Copy 
+5) Reverse 
+6) Do you want to exit? Enter your choice: 4 
+Copied String = MMCOE 1) Substring
+2) Palindrome 
+3) Compare 
+4) Copy 
+5) Reverse 
+6) Do you want to exit? 
+Enter your choice: 5 
+Reversed String = EOCMM 
+1) Substring 
+2) Palindrome 
+3) Compare 
+4) Copy 
+5) Reverse 
+6) Do you want to exit? 
+Enter your choice: 6 
+=== Code Execution Successful ===
